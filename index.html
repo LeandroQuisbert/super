@@ -3,191 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OptiMarket Horizontal - Comparador</title>
+    <title>OptiMarket Pro - Analizador de Dispersión</title>
     <style>
         :root {
-            --primary: #27ae60;
-            --secondary: #2980b9;
-            --bg: #f0f2f5;
+            --win: #27ae60;
+            --info: #2980b9;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --bg: #f4f7f6;
         }
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 20px;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
 
-        .container {
-            max-width: 1000px;
-            margin: auto;
-        }
-
-        .header-card {
+        /* Panel de Control */
+        .control-panel {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .input-group {
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        input {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            width: 300px;
-        }
-
-        button {
-            padding: 12px 24px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* DISEÑO HORIZONTAL (GRID) */
-        .item-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 15px;
-            padding: 0;
-            list-style: none;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            margin-bottom: 30px;
         }
 
-        .item-card {
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        select, input { padding: 10px; border: 1px solid #ddd; border-radius: 6px; min-width: 150px; }
+        
+        button { 
+            padding: 10px 25px; background: var(--dark); color: white; border: none; 
+            border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+        button:hover { background: var(--info); }
+
+        /* Grid de Resultados */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 5px solid var(--primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            animation: slideIn 0.3s ease;
-        }
-
-        .product-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .price-tag {
-            font-size: 1.4rem;
-            color: var(--primary);
-            font-weight: 800;
-        }
-
-        .market-tag {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            background: #f8f9fa;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-top: 10px;
-            display: inline-block;
-        }
-
-        .savings {
-            font-size: 0.75rem;
-            color: #e67e22;
-            font-weight: bold;
-        }
-
-        .footer-total {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
             border-radius: 12px;
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--info);
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .badge-dispersion { font-size: 0.7rem; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+        .low-disp { background: #e8f6f3; color: #16a085; }
+        .high-disp { background: #fef9e7; color: #d4ac0d; }
+
+        /* Tabla de Mejores Precios */
+        .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .price-table tr { border-bottom: 1px solid #eee; }
+        .price-table td { padding: 8px 0; font-size: 0.9rem; }
+        .price-val { font-weight: bold; color: var(--dark); text-align: right; }
+        .best-deal { color: var(--win); font-size: 1.1rem; }
+
+        .market-label { display: flex; align-items: center; gap: 5px; color: #666; }
+        .winner-icon { font-size: 1rem; }
+
+        .summary-bar {
+            position: fixed; bottom: 20px; right: 20px; background: var(--dark);
+            color: white; padding: 15px 30px; border-radius: 50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header-card">
-        <h1>🛒 Optimizador de Gasto Mensual</h1>
+    <div class="control-panel">
         <div class="input-group">
-            <input type="text" id="prodIn" placeholder="Añade un producto (ej: Café)">
-            <button onclick="addProd()">Buscar Mejor Precio</button>
+            <label>Producto</label>
+            <input type="text" id="prodName" placeholder="Ej: Leche, Aceite...">
         </div>
+        <div class="input-group">
+            <label>Tipo/Variedad</label>
+            <select id="prodType">
+                <option value="Entera">Entera / Normal</option>
+                <option value="Semidesnatada">Semidesnatada / Light</option>
+                <option value="Desnatada">Desnatada / Zero</option>
+                <option value="Extra">Premium / Extra</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Marca</label>
+            <select id="prodBrand">
+                <option value="Marca Blanca">Marca Blanca (Ahorro)</option>
+                <option value="Cremosita">Cremosita (Media)</option>
+                <option value="BioPlus">BioPlus (Alta Calidad)</option>
+                <option value="PremiumGold">PremiumGold</option>
+            </select>
+        </div>
+        <button onclick="analyzeProduct()">Analizar Precios</button>
     </div>
 
-    <ul class="item-grid" id="grid">
-        </ul>
+    <div class="comparison-grid" id="grid">
+        </div>
+</div>
 
-    <div class="footer-total" id="footer" style="display: none;">
-        <span>TOTAL MENSUAL OPTIMIZADO:</span>
-        <span id="resTotal" style="font-size: 1.5rem; color: #2ecc71;">0.00€</span>
-    </div>
+<div class="summary-bar" id="totalSaved" style="display:none">
+    Ahorro Total Optimizado: <span id="saveVal">0.00</span>€
 </div>
 
 <script>
-    let total = 0;
-    const superMercados = ["Eroski", "Dia", "Aldi", "Consum", "Amazon Fresh"];
+    const supermarkets = ["Mercadona", "Carrefour", "Lidl", "Alcampo", "Aldi", "Dia", "Eroski", "El Corte Inglés"];
+    let totalSaved = 0;
 
-    function addProd() {
-        const input = document.getElementById('prodIn');
-        const val = input.value.trim();
-        if(!val) return;
+    function analyzeProduct() {
+        const name = document.getElementById('prodName').value || "Producto";
+        const type = document.getElementById('prodType').value;
+        const brand = document.getElementById('prodBrand').value;
 
-        // Generación de datos simulados
-        const pOriginal = (Math.random() * 15 + 2).toFixed(2);
-        const pBajo = (pOriginal * 0.75).toFixed(2);
-        const ahorro = (pOriginal - pBajo).toFixed(2);
-        const superIdx = Math.floor(Math.random() * superMercados.length);
-
-        const grid = document.getElementById('grid');
-        const card = document.createElement('li');
-        card.className = 'item-card';
+        // Simulador de dispersión basado en la marca
+        // Marca blanca y Cremosita suelen tener baja dispersión (precios pactados o muy competitivos)
+        let dispersionFactor = (brand === "Marca Blanca" || brand === "Cremosita") ? 0.05 : 0.25;
+        let basePrice = (brand === "Marca Blanca") ? 0.90 : (brand === "Cremosita" ? 1.20 : 2.50);
         
-        card.innerHTML = `
-            <div>
-                <div class="product-name">${val}</div>
-                <div class="savings">Ahorras: ${ahorro}€</div>
-            </div>
-            <div>
-                <div class="price-tag">${pBajo}€</div>
-                <div class="market-tag">📍 ${superMercados[superIdx]}</div>
-            </div>
-        `;
+        // Generar precios para 8 supermercados y elegir los 3 mejores
+        let offers = supermarkets.map(s => {
+            let variance = (Math.random() * (basePrice * dispersionFactor));
+            return {
+                market: s,
+                price: parseFloat((basePrice + variance).toFixed(2))
+            };
+        }).sort((a, b) => a.price - b.price);
 
-        grid.appendChild(card);
+        const top3 = offers.slice(0, 3);
+        const isLowDispersion = (top3[2].price - top3[0].price) < 0.10;
+
+        renderCard(name, type, brand, top3, isLowDispersion);
         
-        // Sumar al total
-        total += parseFloat(pBajo);
-        document.getElementById('resTotal').innerText = total.toFixed(2) + "€";
-        document.getElementById('footer').style.display = 'flex';
-
-        input.value = "";
-        input.focus();
+        // Calcular ahorro simulado (diferencia entre el peor precio y el mejor)
+        totalSaved += (offers[offers.length-1].price - top3[0].price);
+        document.getElementById('totalSaved').style.display = 'block';
+        document.getElementById('saveVal').innerText = totalSaved.toFixed(2);
     }
 
-    // Enter para añadir
-    document.getElementById('prodIn').addEventListener("keypress", (e) => {
-        if (e.key === "Enter") addProd();
-    });
+    function renderCard(name, type, brand, top3, isLowDispersion) {
+        const grid = document.getElementById('grid');
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        const dispersionLabel = isLowDispersion ? 
+            '<span class="badge-dispersion low-disp">BAJA DISPERSIÓN (Precios estables)</span>' : 
+            '<span class="badge-dispersion high-disp">ALTA DISPERSIÓN (¡Compara!)</span>';
+
+        card.innerHTML = `
+            <div class="card-header">
+                <div>
+                    <strong style="font-size:1.2rem">${name}</strong><br>
+                    <small>${brand} - ${type}</small>
+                </div>
+                ${dispersionLabel}
+            </div>
+            <table class="price-table">
+                ${top3.map((o, i) => `
+                    <tr>
+                        <td class="market-label">
+                            ${i === 0 ? '<span class="winner-icon">🏆</span>' : '<span>&nbsp;&nbsp;&nbsp;</span>'}
+                            ${o.market}
+                        </td>
+                        <td class="price-val ${i === 0 ? 'best-deal' : ''}">${o.price.toFixed(2)}€</td>
+                    </tr>
+                `).join('')}
+            </table>
+            <p style="font-size:0.75rem; color:#999; margin-top:15px; font-style:italic">
+                * El precio mínimo es idéntico en ${Math.floor(Math.random()*2)+1} establecimientos adicionales.
+            </p>
+        `;
+
+        grid.prepend(card);
+    }
 </script>
 
 </body>
