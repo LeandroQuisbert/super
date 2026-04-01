@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiMarket Horizontal - Comparador</title>
+    <style>
+        :root {
+            --primary: #27ae60;
+            --secondary: #2980b9;
+            --bg: #f0f2f5;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .header-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* DISEÑO HORIZONTAL (GRID) */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .item-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .price-tag {
+            font-size: 1.4rem;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .market-tag {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .savings {
+            font-size: 0.75rem;
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .footer-total {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-card">
+        <h1>🛒 Optimizador de Gasto Mensual</h1>
+        <div class="input-group">
+            <input type="text" id="prodIn" placeholder="Añade un producto (ej: Café)">
+            <button onclick="addProd()">Buscar Mejor Precio</button>
+        </div>
+    </div>
+
+    <ul class="item-grid" id="grid">
+        </ul>
+
+    <div class="footer-total" id="footer" style="display: none;">
+        <span>TOTAL MENSUAL OPTIMIZADO:</span>
+        <span id="resTotal" style="font-size: 1.5rem; color: #2ecc71;">0.00€</span>
+    </div>
+</div>
+
+<script>
+    let total = 0;
+    const superMercados = ["Eroski", "Dia", "Aldi", "Consum", "Amazon Fresh"];
+
+    function addProd() {
+        const input = document.getElementById('prodIn');
+        const val = input.value.trim();
+        if(!val) return;
+
+        // Generación de datos simulados
+        const pOriginal = (Math.random() * 15 + 2).toFixed(2);
+        const pBajo = (pOriginal * 0.75).toFixed(2);
+        const ahorro = (pOriginal - pBajo).toFixed(2);
+        const superIdx = Math.floor(Math.random() * superMercados.length);
+
+        const grid = document.getElementById('grid');
+        const card = document.createElement('li');
+        card.className = 'item-card';
+        
+        card.innerHTML = `
+            <div>
+                <div class="product-name">${val}</div>
+                <div class="savings">Ahorras: ${ahorro}€</div>
+            </div>
+            <div>
+                <div class="price-tag">${pBajo}€</div>
+                <div class="market-tag">📍 ${superMercados[superIdx]}</div>
+            </div>
+        `;
+
+        grid.appendChild(card);
+        
+        // Sumar al total
+        total += parseFloat(pBajo);
+        document.getElementById('resTotal').innerText = total.toFixed(2) + "€";
+        document.getElementById('footer').style.display = 'flex';
+
+        input.value = "";
+        input.focus();
+    }
+
+    // Enter para añadir
+    document.getElementById('prodIn').addEventListener("keypress", (e) => {
+        if (e.key === "Enter") addProd();
+    });
+</script>
+
+</body>
+</html>
