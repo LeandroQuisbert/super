@@ -3,649 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>SmartPrice | Gráfico de dispersión de precios</title>
+    <title>SmartPrice | Lista de compra real (mobile‑first)</title>
+    <!-- Tailwind + daisyUI CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.css" rel="stylesheet" type="text/css" />
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Estilos adicionales para mejor visualización vertical en móvil */
+        .top3-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #eef2f5;
-            color: #1a2c3e;
-            padding: 2rem 1.5rem;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
+        .top3-item {
+            background: #f3f4f6;
+            padding: 0.2rem 0.5rem;
             border-radius: 2rem;
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .hero {
-            background: linear-gradient(135deg, #0f4c3a, #1e6b5e);
-            padding: 1.8rem 2rem;
-            color: white;
-        }
-        .hero h1 {
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .hero p {
-            opacity: 0.85;
-            margin-top: 6px;
-        }
-        .search-section {
-            padding: 1.5rem 2rem 0.5rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .search-wrapper {
-            display: flex;
-            background: #f1f5f9;
-            border-radius: 60px;
-            padding: 0.5rem 1.2rem;
-            border: 1px solid #dce5ec;
-        }
-        .search-wrapper i {
-            color: #4a6f7a;
-            margin-right: 12px;
-        }
-        #searchInput {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-size: 1rem;
-            outline: none;
-            padding: 8px 0;
-        }
-        .counter-badge {
-            background: #e2e8f0;
-            border-radius: 40px;
-            padding: 4px 12px;
             font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .table-container {
-            overflow-x: auto;
-            padding: 1rem;
-        }
-        .price-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-        .price-table th {
-            text-align: left;
-            padding: 1rem 0.8rem;
-            background: #f8fafc;
-            color: #1f5e51;
-            font-weight: 600;
-            border-bottom: 2px solid #dee6ed;
-        }
-        .price-table td {
-            padding: 1rem 0.8rem;
-            border-bottom: 1px solid #ecf3f9;
-            vertical-align: middle;
-        }
-        .product-name {
-            font-weight: 700;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .variant-select {
-            background: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 30px;
-            padding: 5px 10px;
-            font-size: 0.75rem;
-            font-weight: normal;
-            cursor: pointer;
-            width: 100%;
-            max-width: 200px;
-        }
-        .qty-control {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .qty-input {
-            width: 80px;
-            padding: 6px 8px;
-            text-align: center;
-            border: 1px solid #cbd5e1;
-            border-radius: 28px;
             font-weight: 500;
-        }
-        .best-prices-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .price-rank-item {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: #f9fbfd;
-            padding: 4px 10px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-        }
-        .medal {
-            font-size: 1.1rem;
-            width: 32px;
-        }
-        .super-name {
-            font-weight: 600;
-            min-width: 100px;
+            gap: 0.4rem;
+            width: fit-content;
         }
         .price-value {
-            font-weight: 700;
-            color: #1f6e5c;
+            color: #2c7a4d;
+            font-weight: 600;
         }
-        .dispersion-tag {
-            font-size: 0.7rem;
-            background: #f1f5f9;
-            border-radius: 30px;
-            padding: 2px 10px;
-            display: inline-block;
-            margin-top: 5px;
-        }
-        .price-chart {
-            width: 140px;
-            height: 50px;
-            background: #fafcfd;
-            border-radius: 8px;
-            display: block;
-            margin: 0 auto;
-        }
-        .chart-container {
-            text-align: center;
-        }
-        .totals-panel {
-            background: #f0f6fa;
-            margin: 1rem;
-            border-radius: 1.5rem;
-            padding: 1.2rem 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-        .total-card {
-            background: white;
-            border-radius: 1.2rem;
-            padding: 0.5rem 1.2rem;
-            text-align: center;
-        }
-        .total-card .amount {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #1f6e5c;
-        }
-        .optimal-card {
-            background: #e0f2ec;
-            border-left: 4px solid #1f8a6f;
-        }
-        .save-badge {
-            background: #1f6e5c;
-            color: white;
-            border-radius: 60px;
-            padding: 6px 18px;
-            font-weight: bold;
-        }
-        .reset-btn {
-            background: white;
-            border: 1px solid #cbd5e1;
-            padding: 8px 18px;
-            border-radius: 40px;
-            cursor: pointer;
-        }
-        .footer-note {
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.7rem;
-            color: #5e7e8c;
-            border-top: 1px solid #e9f0f5;
-        }
-        @media (max-width: 800px) {
-            body { padding: 1rem; }
-            .hero h1 { font-size: 1.4rem; }
-            .price-table th, .price-table td { padding: 0.8rem 0.5rem; }
-            .price-chart { width: 100px; height: 40px; }
+        /* Ajustes para móvil */
+        @media (max-width: 640px) {
+            .table th, .table td {
+                padding: 0.5rem 0.3rem;
+            }
+            .top3-item {
+                font-size: 0.7rem;
+                padding: 0.15rem 0.4rem;
+            }
         }
     </style>
 </head>
-<body>
-<div class="container">
-    <div class="hero">
-        <h1><i class="fas fa-chart-line"></i> SmartPrice Visual</h1>
-        <p>Compara los 3 mejores precios y visualiza la dispersión con gráficos de caja · Optimiza tu gasto mensual</p>
-    </div>
-    <div class="search-section">
-        <div class="search-wrapper">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Buscar producto (leche, arroz, pollo...)" autocomplete="off">
-            <div class="counter-badge" id="productCounter"></div>
+<body class="bg-base-200 p-3 md:p-5">
+    <div class="max-w-7xl mx-auto">
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body p-3 md:p-5">
+                <!-- Header compacto y mobile‑first -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold text-primary flex items-center gap-2">
+                            <i class="fas fa-chart-line"></i> SmartPrice
+                        </h1>
+                        <p class="text-xs text-base-content/70">Comparador real · 5 supermercados · 3 mejores precios (vertical)</p>
+                    </div>
+                    <div class="join w-full sm:w-auto">
+                        <input type="text" id="searchInput" placeholder="Buscar producto..." class="input input-bordered join-item w-full sm:w-64" />
+                        <span class="join-item badge badge-neutral px-3 flex items-center" id="productCounter">0</span>
+                    </div>
+                </div>
+
+                <!-- Tabla responsiva con scroll horizontal si es necesario -->
+                <div class="overflow-x-auto">
+                    <table class="table table-sm table-zebra w-full">
+                        <thead>
+                            <tr class="bg-base-200 text-sm">
+                                <th>Producto / Variante</th>
+                                <th class="w-20">Cant.</th>
+                                <th>🏆 3 mejores precios</th>
+                                <th class="w-28">💰 Ahorro máx.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- JS dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noResults" class="alert alert-info shadow-lg mt-3 hidden">
+                    <i class="fas fa-search"></i>
+                    <span>No hay productos con ese nombre.</span>
+                </div>
+
+                <!-- Panel de totales compacto -->
+                <div class="flex flex-wrap justify-between items-center gap-3 mt-4 p-3 bg-base-200 rounded-box" id="totalsPanel"></div>
+
+                <div class="text-xs text-center text-base-content/60 mt-2">
+                    <i class="fas fa-chart-simple"></i> Ahorro máximo = diferencia entre el precio más caro y el más barato por unidad. Compra óptima = elegir siempre el mejor precio.
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="table-container">
-        <table class="price-table" id="priceTable">
-            <thead>
-                <tr>
-                    <th>Producto / Variante</th>
-                    <th>Cantidad mensual</th>
-                    <th>🏆 Mejores 3 precios</th>
-                    <th>📊 Dispersión (gráfico)</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-        <div id="noResults" style="text-align:center; padding:2rem; display:none;">No hay productos con ese nombre.</div>
-    </div>
+    <script>
+        // ----- 5 supermercados estándar -----
+        const SUPERMARKETS = [
+            { id: "mercadona", name: "Mercadona" },
+            { id: "carrefour", name: "Carrefour" },
+            { id: "alcampo", name: "Alcampo" },
+            { id: "lidl", name: "Lidl" },
+            { id: "dia", name: "Dia" }
+        ];
 
-    <div class="totals-panel" id="totalsPanel"></div>
-    <div class="footer-note">
-        <i class="fas fa-chart-simple"></i> Gráfico de caja: línea = rango total, rectángulo = rango intercuartil (Q1–Q3), línea vertical = mediana. A menor rectángulo, menor dispersión.
-    </div>
-</div>
+        // ----- LISTA AMPLIADA DE PRODUCTOS (más realista) -----
+        const productsDefinition = [
+            // Lácteos
+            { id: 1, baseName: "🥛 Leche entera", variants: [{ name: "M. Blanca 1L", prices: { mercadona: 0.89, carrefour: 0.85, alcampo: 0.90, lidl: 0.79, dia: 0.82 } }], defaultVariantIndex: 0, defaultQty: 4 },
+            { id: 2, baseName: "🥛 Leche semidesnatada", variants: [{ name: "M. Blanca 1L", prices: { mercadona: 0.87, carrefour: 0.84, alcampo: 0.88, lidl: 0.78, dia: 0.81 } }], defaultVariantIndex: 0, defaultQty: 4 },
+            { id: 3, baseName: "🧀 Queso rallado", variants: [{ name: "Marca blanca 200g", prices: { mercadona: 1.45, carrefour: 1.39, alcampo: 1.50, lidl: 1.35, dia: 1.42 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            { id: 4, baseName: "🥚 Huevos", variants: [{ name: "Docena L", prices: { mercadona: 1.85, carrefour: 1.80, alcampo: 1.90, lidl: 1.75, dia: 1.78 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            // Panadería
+            { id: 5, baseName: "🍞 Pan barra", variants: [{ name: "Normal", prices: { mercadona: 0.85, carrefour: 0.90, alcampo: 0.80, lidl: 0.75, dia: 0.82 } }], defaultVariantIndex: 0, defaultQty: 6 },
+            { id: 6, baseName: "🍞 Pan integral", variants: [{ name: "Barra", prices: { mercadona: 0.95, carrefour: 1.00, alcampo: 0.92, lidl: 0.88, dia: 0.94 } }], defaultVariantIndex: 0, defaultQty: 3 },
+            // Carnes
+            { id: 7, baseName: "🍗 Pechuga pollo", variants: [{ name: "1kg", prices: { mercadona: 5.90, carrefour: 5.70, alcampo: 5.95, lidl: 5.60, dia: 5.75 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            { id: 8, baseName: "🥩 Carne picada ternera", variants: [{ name: "500g", prices: { mercadona: 4.20, carrefour: 4.10, alcampo: 4.30, lidl: 3.95, dia: 4.05 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            // Pescado
+            { id: 9, baseName: "🐟 Merluza fresca", variants: [{ name: "filete kg", prices: { mercadona: 11.90, carrefour: 11.50, alcampo: 12.10, lidl: 10.90, dia: 11.30 } }], defaultVariantIndex: 0, defaultQty: 1 },
+            // Frutas
+            { id: 10, baseName: "🍎 Manzana Golden", variants: [{ name: "kg", prices: { mercadona: 1.95, carrefour: 2.10, alcampo: 1.90, lidl: 1.85, dia: 1.88 } }], defaultVariantIndex: 0, defaultQty: 3 },
+            { id: 11, baseName: "🍌 Plátano", variants: [{ name: "kg", prices: { mercadona: 1.50, carrefour: 1.55, alcampo: 1.45, lidl: 1.40, dia: 1.48 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            { id: 12, baseName: "🍊 Naranja", variants: [{ name: "kg", prices: { mercadona: 1.30, carrefour: 1.35, alcampo: 1.25, lidl: 1.20, dia: 1.28 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            // Verduras
+            { id: 13, baseName: "🍅 Tomate pera", variants: [{ name: "kg", prices: { mercadona: 1.80, carrefour: 1.75, alcampo: 1.85, lidl: 1.70, dia: 1.73 } }], defaultVariantIndex: 0, defaultQty: 3 },
+            { id: 14, baseName: "🥔 Patata", variants: [{ name: "kg", prices: { mercadona: 1.10, carrefour: 1.05, alcampo: 1.15, lidl: 0.99, dia: 1.08 } }], defaultVariantIndex: 0, defaultQty: 4 },
+            { id: 15, baseName: "🥕 Zanahoria", variants: [{ name: "kg", prices: { mercadona: 0.95, carrefour: 0.90, alcampo: 1.00, lidl: 0.85, dia: 0.92 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            // Arroz y pasta
+            { id: 16, baseName: "🍚 Arroz blanco", variants: [{ name: "1kg", prices: { mercadona: 1.15, carrefour: 1.20, alcampo: 1.10, lidl: 1.05, dia: 1.12 } }], defaultVariantIndex: 0, defaultQty: 2 },
+            { id: 17, baseName: "🍝 Espaguetis", variants: [{ name: "500g", prices: { mercadona: 0.85, carrefour: 0.90, alcampo: 0.80, lidl: 0.75, dia: 0.82 } }], defaultVariantIndex: 0, defaultQty: 3 },
+            // Aceite y conservas
+            { id: 18, baseName: "🫒 Aceite oliva", variants: [{ name: "Virgen extra 1L", prices: { mercadona: 4.95, carrefour: 4.80, alcampo: 5.10, lidl: 4.70, dia: 4.85 } }], defaultVariantIndex: 0, defaultQty: 1 },
+            { id: 19, baseName: "🥫 Atún en conserva", variants: [{ name: "lata 150g", prices: { mercadona: 1.65, carrefour: 1.60, alcampo: 1.70, lidl: 1.55, dia: 1.62 } }], defaultVariantIndex: 0, defaultQty: 3 },
+            // Bebidas
+            { id: 20, baseName: "💧 Agua mineral", variants: [{ name: "6x1.5L", prices: { mercadona: 2.25, carrefour: 2.20, alcampo: 2.30, lidl: 2.10, dia: 2.18 } }], defaultVariantIndex: 0, defaultQty: 2 }
+        ];
 
-<script>
-    // Definición de supermercados (pueden ser más, solo se muestran los 3 mejores)
-    const SUPERMARKETS = [
-        { id: "mercadona", name: "Mercadona" },
-        { id: "carrefour", name: "Carrefour" },
-        { id: "alcampo", name: "Alcampo" },
-        { id: "lidl", name: "Lidl" },
-        { id: "dia", name: "Dia" }
-    ];
-
-    // Productos con variantes (misma estructura que antes)
-    const productsDefinition = [
-        {
-            id: 1,
-            baseName: "🥛 Leche",
-            variants: [
-                { name: "Entera (M. Blanca)", prices: { mercadona: 0.89, carrefour: 0.85, alcampo: 0.90, lidl: 0.79, dia: 0.82 } },
-                { name: "Entera (Pascual)", prices: { mercadona: 1.05, carrefour: 1.02, alcampo: 1.08, lidl: 0.99, dia: 1.04 } },
-                { name: "Entera (Asturiana)", prices: { mercadona: 1.12, carrefour: 1.09, alcampo: 1.15, lidl: 1.05, dia: 1.10 } },
-                { name: "Semidesnatada (M. Blanca)", prices: { mercadona: 0.87, carrefour: 0.84, alcampo: 0.88, lidl: 0.78, dia: 0.81 } },
-                { name: "Semidesnatada (Pascual)", prices: { mercadona: 1.03, carrefour: 1.00, alcampo: 1.06, lidl: 0.97, dia: 1.02 } },
-                { name: "Desnatada (M. Blanca)", prices: { mercadona: 0.86, carrefour: 0.83, alcampo: 0.87, lidl: 0.77, dia: 0.80 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 8
-        },
-        {
-            id: 2,
-            baseName: "🍞 Pan",
-            variants: [
-                { name: "Barra normal", prices: { mercadona: 0.85, carrefour: 0.90, alcampo: 0.80, lidl: 0.75, dia: 0.82 } },
-                { name: "Barra integral", prices: { mercadona: 0.95, carrefour: 1.00, alcampo: 0.92, lidl: 0.88, dia: 0.94 } },
-                { name: "Pan de molde (500g)", prices: { mercadona: 1.20, carrefour: 1.15, alcampo: 1.25, lidl: 1.10, dia: 1.18 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 12
-        },
-        {
-            id: 3,
-            baseName: "🥚 Huevos",
-            variants: [
-                { name: "Docena L", prices: { mercadona: 1.85, carrefour: 1.80, alcampo: 1.90, lidl: 1.75, dia: 1.78 } },
-                { name: "Docena XL", prices: { mercadona: 2.10, carrefour: 2.05, alcampo: 2.15, lidl: 2.00, dia: 2.08 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 4
-        },
-        {
-            id: 4,
-            baseName: "🍚 Arroz",
-            variants: [
-                { name: "Blanco (1kg)", prices: { mercadona: 1.15, carrefour: 1.20, alcampo: 1.10, lidl: 1.05, dia: 1.12 } },
-                { name: "Integral (1kg)", prices: { mercadona: 1.40, carrefour: 1.45, alcampo: 1.38, lidl: 1.35, dia: 1.42 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 2
-        },
-        {
-            id: 5,
-            baseName: "🍗 Pollo",
-            variants: [
-                { name: "Pechuga (kg)", prices: { mercadona: 5.90, carrefour: 5.70, alcampo: 5.95, lidl: 5.60, dia: 5.75 } },
-                { name: "Muslo (kg)", prices: { mercadona: 4.20, carrefour: 4.10, alcampo: 4.30, lidl: 3.95, dia: 4.15 } },
-                { name: "Ala (kg)", prices: { mercadona: 3.50, carrefour: 3.40, alcampo: 3.60, lidl: 3.30, dia: 3.45 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 5
-        },
-        {
-            id: 6,
-            baseName: "🍅 Tomates",
-            variants: [
-                { name: "Pera (kg)", prices: { mercadona: 1.80, carrefour: 1.75, alcampo: 1.85, lidl: 1.70, dia: 1.73 } },
-                { name: "Rama (kg)", prices: { mercadona: 2.10, carrefour: 2.00, alcampo: 2.15, lidl: 1.95, dia: 2.05 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 6
-        },
-        {
-            id: 7,
-            baseName: "🍎 Manzanas",
-            variants: [
-                { name: "Golden (kg)", prices: { mercadona: 1.95, carrefour: 2.10, alcampo: 1.90, lidl: 1.85, dia: 1.88 } },
-                { name: "Fuji (kg)", prices: { mercadona: 2.20, carrefour: 2.30, alcampo: 2.15, lidl: 2.10, dia: 2.18 } },
-                { name: "Granny Smith (kg)", prices: { mercadona: 2.40, carrefour: 2.50, alcampo: 2.35, lidl: 2.30, dia: 2.38 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 4
-        },
-        {
-            id: 8,
-            baseName: "🫒 Aceite",
-            variants: [
-                { name: "Oliva virgen extra (1L)", prices: { mercadona: 4.95, carrefour: 4.80, alcampo: 5.10, lidl: 4.70, dia: 4.85 } },
-                { name: "Oliva suave (1L)", prices: { mercadona: 4.20, carrefour: 4.10, alcampo: 4.35, lidl: 4.00, dia: 4.15 } },
-                { name: "Girasol (1L)", prices: { mercadona: 1.90, carrefour: 1.85, alcampo: 1.95, lidl: 1.80, dia: 1.88 } }
-            ],
-            defaultVariantIndex: 0,
-            baseQty: 1
-        }
-    ];
-
-    // Estado dinámico
-    let productsState = productsDefinition.map(prod => ({
-        id: prod.id,
-        baseName: prod.baseName,
-        selectedVariantIndex: prod.defaultVariantIndex,
-        monthlyQty: prod.baseQty,
-        variants: prod.variants
-    }));
-
-    let currentFilter = "";
-
-    function getCurrentPrices(productState) {
-        return productState.variants[productState.selectedVariantIndex].prices;
-    }
-
-    function getFullProductName(productState) {
-        const variantName = productState.variants[productState.selectedVariantIndex].name;
-        return `${productState.baseName} (${variantName})`;
-    }
-
-    function getPriceRanking(pricesObj) {
-        const entries = SUPERMARKETS.map(sup => ({
-            supermarket: sup.name,
-            id: sup.id,
-            price: pricesObj[sup.id] || Infinity
+        // Estado dinámico
+        let productsState = productsDefinition.map(prod => ({
+            id: prod.id,
+            baseName: prod.baseName,
+            selectedVariantIndex: prod.defaultVariantIndex,
+            quantity: prod.defaultQty,
+            variants: prod.variants
         }));
-        entries.sort((a,b) => a.price - b.price);
-        return entries;
-    }
 
-    function getDispersionText(pricesObj) {
-        const values = Object.values(pricesObj).filter(v => v !== undefined);
-        if (values.length === 0) return "N/A";
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        const diff = (max - min).toFixed(2);
-        const percent = ((max - min) / min * 100).toFixed(1);
-        return `€${diff} (${percent}%)`;
-    }
+        let currentFilter = "";
 
-    // Dibujar gráfico de caja en un canvas
-    function drawBoxPlot(canvas, pricesArray) {
-        if (!canvas || pricesArray.length === 0) return;
-        const ctx = canvas.getContext('2d');
-        const width = canvas.width;
-        const height = canvas.height;
-        ctx.clearRect(0, 0, width, height);
-        
-        const sorted = [...pricesArray].sort((a,b) => a - b);
-        const min = sorted[0];
-        const max = sorted[sorted.length-1];
-        
-        // Calcular cuartiles y mediana
-        const getPercentile = (arr, p) => {
-            if (arr.length === 0) return 0;
-            const index = (arr.length - 1) * p;
-            const lower = Math.floor(index);
-            const upper = Math.ceil(index);
-            if (lower === upper) return arr[lower];
-            return arr[lower] * (upper - index) + arr[upper] * (index - lower);
-        };
-        const q1 = getPercentile(sorted, 0.25);
-        const median = getPercentile(sorted, 0.5);
-        const q3 = getPercentile(sorted, 0.75);
-        
-        const padding = 5;
-        const plotLeft = padding;
-        const plotRight = width - padding;
-        const range = max - min;
-        const xScale = (range === 0) ? 1 : (plotRight - plotLeft) / range;
-        
-        const mapX = (value) => plotLeft + (value - min) * xScale;
-        
-        const lineY = height * 0.5;
-        const boxHeight = height * 0.4;
-        const medianLineHeight = height * 0.6;
-        
-        // Dibujar línea de rango (min a max)
-        ctx.beginPath();
-        ctx.moveTo(mapX(min), lineY);
-        ctx.lineTo(mapX(max), lineY);
-        ctx.strokeStyle = "#888";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        
-        // Dibujar caja IQR (Q1 a Q3)
-        const x1 = mapX(q1);
-        const x2 = mapX(q3);
-        ctx.fillStyle = "rgba(100, 180, 150, 0.3)";
-        ctx.fillRect(x1, lineY - boxHeight/2, x2 - x1, boxHeight);
-        ctx.strokeStyle = "#2c7a47";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x1, lineY - boxHeight/2, x2 - x1, boxHeight);
-        
-        // Dibujar línea de mediana
-        const medX = mapX(median);
-        ctx.beginPath();
-        ctx.moveTo(medX, lineY - medianLineHeight/2);
-        ctx.lineTo(medX, lineY + medianLineHeight/2);
-        ctx.strokeStyle = "#d95f0e";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        
-        // Opcional: marcar los puntos individuales (cada supermercado)
-        const points = pricesArray;
-        points.forEach(price => {
-            const x = mapX(price);
-            ctx.beginPath();
-            ctx.arc(x, lineY, 3, 0, 2 * Math.PI);
-            ctx.fillStyle = "#2c6e9e";
-            ctx.fill();
-        });
-    }
-
-    function render() {
-        const filterLower = currentFilter.toLowerCase().trim();
-        let filteredStates = productsState;
-        if (filterLower !== "") {
-            filteredStates = productsState.filter(ps => getFullProductName(ps).toLowerCase().includes(filterLower));
+        // Helpers
+        function getCurrentPrices(ps) {
+            return ps.variants[ps.selectedVariantIndex].prices;
+        }
+        function getFullProductName(ps) {
+            const variantName = ps.variants[ps.selectedVariantIndex].name;
+            return `${ps.baseName} (${variantName})`;
+        }
+        function getPriceRanking(pricesObj) {
+            const entries = SUPERMARKETS.map(sup => ({
+                supermarket: sup.name,
+                price: pricesObj[sup.id] || Infinity
+            }));
+            entries.sort((a,b) => a.price - b.price);
+            return entries;
+        }
+        function getMaxSavings(pricesObj) {
+            const values = Object.values(pricesObj).filter(v => v !== undefined);
+            if (values.length < 2) return { diff: 0, percent: 0 };
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const diff = max - min;
+            const percent = (diff / max) * 100;
+            return { diff, percent };
         }
 
-        const tbody = document.getElementById("tableBody");
-        const noResultsDiv = document.getElementById("noResults");
-        const counterSpan = document.getElementById("productCounter");
+        function render() {
+            const filterLower = currentFilter.toLowerCase().trim();
+            let filtered = productsState;
+            if (filterLower !== "") {
+                filtered = productsState.filter(ps => getFullProductName(ps).toLowerCase().includes(filterLower));
+            }
 
-        if (filteredStates.length === 0) {
-            tbody.innerHTML = "";
-            noResultsDiv.style.display = "block";
-            counterSpan.innerText = `0 / ${productsState.length}`;
-            renderTotals();
-            return;
-        }
-        noResultsDiv.style.display = "none";
-        counterSpan.innerText = `${filteredStates.length} / ${productsState.length}`;
+            const tbody = document.getElementById("tableBody");
+            const noResultsDiv = document.getElementById("noResults");
+            const counterSpan = document.getElementById("productCounter");
 
-        let html = "";
-        for (let ps of filteredStates) {
-            const prices = getCurrentPrices(ps);
-            const pricesArray = Object.values(prices).filter(v => v !== undefined);
-            const ranking = getPriceRanking(prices);
-            const top3 = ranking.slice(0,3);
-            const dispersionText = getDispersionText(prices);
-            
-            // Top 3 visual
-            let top3Html = `<div class="best-prices-list">`;
-            top3.forEach((item, idx) => {
-                let medal = idx === 0 ? "🥇" : (idx === 1 ? "🥈" : "🥉");
-                top3Html += `
-                    <div class="price-rank-item">
-                        <span class="medal">${medal}</span>
-                        <span class="super-name">${item.supermarket}</span>
-                        <span class="price-value">€${item.price.toFixed(2)}</span>
-                    </div>
-                `;
-            });
-            top3Html += `</div><div class="dispersion-tag"><i class="fas fa-chart-simple"></i> Dispersión: ${dispersionText}</div>`;
-            
-            // Selector de variante
-            let variantOptions = "";
-            ps.variants.forEach((variant, idx) => {
-                const selected = idx === ps.selectedVariantIndex ? "selected" : "";
-                variantOptions += `<option value="${idx}" ${selected}>${variant.name}</option>`;
-            });
+            if (filtered.length === 0) {
+                tbody.innerHTML = "";
+                noResultsDiv.classList.remove("hidden");
+                counterSpan.innerText = `0/${productsState.length}`;
+                renderTotals();
+                return;
+            }
+            noResultsDiv.classList.add("hidden");
+            counterSpan.innerText = `${filtered.length}/${productsState.length}`;
 
-            // Generar un ID único para el canvas (basado en id y variante actual)
-            const canvasId = `chart_${ps.id}_${ps.selectedVariantIndex}`;
-            
-            html += `<tr data-product-id="${ps.id}">
-                        <td class="product-name">
-                            <strong>${ps.baseName}</strong>
-                            <select class="variant-select" data-id="${ps.id}">
-                                ${variantOptions}
-                            </select>
-                          </td>
-                          <td>
-                            <div class="qty-control">
-                                <input type="number" step="0.5" min="0" value="${ps.monthlyQty}" class="qty-input" data-id="${ps.id}">
-                                <span>uds/mes</span>
+            let html = "";
+            for (let ps of filtered) {
+                const prices = getCurrentPrices(ps);
+                const ranking = getPriceRanking(prices);
+                const top3 = ranking.slice(0,3);
+                const savings = getMaxSavings(prices);
+                const savingsFormatted = `€${savings.diff.toFixed(2)} (${savings.percent.toFixed(0)}%)`;
+
+                // Top 3 en vertical (lista)
+                let top3Html = `<div class="top3-vertical">`;
+                top3.forEach((item, idx) => {
+                    let medal = idx===0 ? "🥇" : (idx===1 ? "🥈" : "🥉");
+                    top3Html += `
+                        <div class="top3-item">
+                            <span>${medal}</span>
+                            <span class="font-medium">${item.supermarket}</span>
+                            <span class="price-value">€${item.price.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+                top3Html += `</div>`;
+
+                // Selector de variante (solo si hay más de una)
+                let variantSelect = "";
+                if (ps.variants.length > 1) {
+                    let options = "";
+                    ps.variants.forEach((v, idx) => {
+                        options += `<option value="${idx}" ${idx===ps.selectedVariantIndex ? "selected" : ""}>${v.name}</option>`;
+                    });
+                    variantSelect = `<select class="select select-xs select-bordered w-full max-w-[140px] mt-1" data-id="${ps.id}">${options}</select>`;
+                } else {
+                    variantSelect = `<span class="text-xs text-base-content/70">${ps.variants[0].name}</span>`;
+                }
+
+                html += `
+                    <tr>
+                        <td class="align-top">
+                            <div class="font-bold text-sm">${ps.baseName}</div>
+                            <div class="mt-1">${variantSelect}</div>
+                        </td>
+                        <td class="align-top">
+                            <input type="number" step="0.5" min="0" value="${ps.quantity}" class="input input-xs input-bordered w-16 text-center" data-id="${ps.id}">
+                            <span class="text-xs ml-0.5">uds</span>
+                        </td>
+                        <td class="align-top">${top3Html}</td>
+                        <td class="align-top">
+                            <div class="badge badge-success gap-1 text-xs py-1 px-2">
+                                <i class="fas fa-tag"></i> ${savingsFormatted}
                             </div>
-                          </td>
-                          <td>${top3Html}</td>
-                          <td class="chart-container">
-                            <canvas id="${canvasId}" class="price-chart" width="140" height="50" style="width:140px; height:50px;"></canvas>
-                          </td>
-                       </tr>`;
-        }
-        tbody.innerHTML = html;
+                        </td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
 
-        // Dibujar los gráficos después de insertar en el DOM
-        for (let ps of filteredStates) {
-            const prices = getCurrentPrices(ps);
-            const pricesArray = Object.values(prices).filter(v => v !== undefined);
-            const canvasId = `chart_${ps.id}_${ps.selectedVariantIndex}`;
-            const canvas = document.getElementById(canvasId);
-            if (canvas && pricesArray.length > 0) {
-                drawBoxPlot(canvas, pricesArray);
+            // Eventos
+            document.querySelectorAll('select[data-id]').forEach(sel => {
+                sel.removeEventListener('change', handleVariantChange);
+                sel.addEventListener('change', handleVariantChange);
+            });
+            document.querySelectorAll('input[data-id]').forEach(inp => {
+                inp.removeEventListener('change', handleQuantityChange);
+                inp.addEventListener('change', handleQuantityChange);
+            });
+            renderTotals();
+        }
+
+        function handleVariantChange(e) {
+            const id = parseInt(e.target.getAttribute('data-id'));
+            const newIdx = parseInt(e.target.value);
+            const ps = productsState.find(p => p.id === id);
+            if (ps) {
+                ps.selectedVariantIndex = newIdx;
+                render();
+            }
+        }
+        function handleQuantityChange(e) {
+            const id = parseInt(e.target.getAttribute('data-id'));
+            let val = parseFloat(e.target.value);
+            if (isNaN(val) || val < 0) val = 0;
+            const ps = productsState.find(p => p.id === id);
+            if (ps) {
+                ps.quantity = val;
+                render();
             }
         }
 
-        // Eventos
-        document.querySelectorAll('.variant-select').forEach(select => {
-            select.removeEventListener('change', handleVariantChange);
-            select.addEventListener('change', handleVariantChange);
-        });
-        document.querySelectorAll('.qty-input').forEach(input => {
-            input.removeEventListener('change', handleQuantityChange);
-            input.addEventListener('change', handleQuantityChange);
-        });
+        function renderTotals() {
+            let totalOptimal = 0;
+            let totalsBySuper = {};
+            SUPERMARKETS.forEach(s => totalsBySuper[s.id] = 0);
 
-        renderTotals();
-    }
+            for (let ps of productsState) {
+                const qty = ps.quantity;
+                if (qty <= 0) continue;
+                const prices = getCurrentPrices(ps);
+                const minPrice = Math.min(...SUPERMARKETS.map(s => prices[s.id]));
+                totalOptimal += minPrice * qty;
+                SUPERMARKETS.forEach(s => totalsBySuper[s.id] += (prices[s.id] * qty));
+            }
 
-    function handleVariantChange(e) {
-        const productId = parseInt(this.getAttribute('data-id'));
-        const newIndex = parseInt(this.value);
-        const productState = productsState.find(ps => ps.id === productId);
-        if (productState) {
-            productState.selectedVariantIndex = newIndex;
-            render();
-        }
-    }
+            let bestSuper = SUPERMARKETS.reduce((best, sup) => totalsBySuper[sup.id] < totalsBySuper[best.id] ? sup : best, SUPERMARKETS[0]);
+            const bestTotal = totalsBySuper[bestSuper.id];
+            const ahorro = bestTotal - totalOptimal;
+            const porcentaje = bestTotal > 0 ? ((ahorro / bestTotal) * 100).toFixed(1) : 0;
 
-    function handleQuantityChange(e) {
-        const productId = parseInt(this.getAttribute('data-id'));
-        let newVal = parseFloat(this.value);
-        if (isNaN(newVal) || newVal < 0) newVal = 0;
-        const productState = productsState.find(ps => ps.id === productId);
-        if (productState) {
-            productState.monthlyQty = newVal;
-            render();
-        }
-    }
-
-    function renderTotals() {
-        let totalOptimal = 0;
-        let totalsBySuper = {};
-        SUPERMARKETS.forEach(sup => totalsBySuper[sup.id] = 0);
-
-        for (let ps of productsState) {
-            const qty = ps.monthlyQty;
-            if (qty <= 0) continue;
-            const prices = getCurrentPrices(ps);
-            const minPrice = Math.min(...SUPERMARKETS.map(sup => prices[sup.id]));
-            totalOptimal += minPrice * qty;
-            SUPERMARKETS.forEach(sup => {
-                totalsBySuper[sup.id] += (prices[sup.id] * qty);
+            const panel = document.getElementById("totalsPanel");
+            panel.innerHTML = `
+                <div class="stats shadow-sm bg-base-100">
+                    <div class="stat py-2 px-3">
+                        <div class="stat-title text-xs">Compra Óptima</div>
+                        <div class="stat-value text-primary text-xl">€${totalOptimal.toFixed(2)}</div>
+                        <div class="stat-desc text-xs">mejor precio por producto</div>
+                    </div>
+                </div>
+                <div class="badge badge-success gap-2 p-3 text-sm">
+                    <i class="fas fa-coins"></i> Ahorro: €${ahorro.toFixed(2)} (${porcentaje}%)
+                    <span class="text-xs">vs ${bestSuper.name} (€${bestTotal.toFixed(2)})</span>
+                </div>
+                <button class="btn btn-sm btn-outline" id="resetAllBtn">
+                    <i class="fas fa-undo-alt"></i> Reset
+                </button>
+            `;
+            document.getElementById("resetAllBtn")?.addEventListener("click", () => {
+                productsState.forEach(ps => {
+                    const def = productsDefinition.find(d => d.id === ps.id);
+                    if (def) {
+                        ps.selectedVariantIndex = def.defaultVariantIndex;
+                        ps.quantity = def.defaultQty;
+                    }
+                });
+                render();
             });
         }
 
-        let bestSuper = SUPERMARKETS.reduce((best, sup) => totalsBySuper[sup.id] < totalsBySuper[best.id] ? sup : best, SUPERMARKETS[0]);
-        const bestSuperTotal = totalsBySuper[bestSuper.id];
-        const ahorro = bestSuperTotal - totalOptimal;
-        const porcentaje = bestSuperTotal > 0 ? ((ahorro / bestSuperTotal) * 100).toFixed(1) : 0;
-
-        const panel = document.getElementById("totalsPanel");
-        panel.innerHTML = `
-            <div class="total-card optimal-card">
-                <span>✨ Compra Óptima (mejor precio por producto)</span>
-                <div class="amount">€${totalOptimal.toFixed(2)}</div>
-            </div>
-            <div class="save-badge">
-                <i class="fas fa-coins"></i> Ahorro: €${ahorro.toFixed(2)} (${porcentaje}%)<br>
-                <span style="font-size:0.7rem;">vs ${bestSuper.name} (€${bestSuperTotal.toFixed(2)})</span>
-            </div>
-            <button class="reset-btn" id="resetAllBtn"><i class="fas fa-undo-alt"></i> Reset cantidades/variantes</button>
-        `;
-        document.getElementById("resetAllBtn")?.addEventListener("click", () => {
-            productsState.forEach(ps => {
-                const originalDef = productsDefinition.find(d => d.id === ps.id);
-                if (originalDef) {
-                    ps.selectedVariantIndex = originalDef.defaultVariantIndex;
-                    ps.monthlyQty = originalDef.baseQty;
-                }
-            });
+        // Búsqueda en tiempo real
+        document.getElementById("searchInput").addEventListener("input", (e) => {
+            currentFilter = e.target.value;
             render();
         });
-    }
-
-    // Evento búsqueda
-    document.getElementById("searchInput").addEventListener("input", (e) => {
-        currentFilter = e.target.value;
         render();
-    });
-
-    render();
-</script>
+    </script>
 </body>
 </html>
